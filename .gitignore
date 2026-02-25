@@ -1,0 +1,19 @@
+# Compiled files
+*.class
+parser.java
+sym.java
+Lexer.java
+
+# Build directory
+bin/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
