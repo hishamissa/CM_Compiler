@@ -1,0 +1,53 @@
+/*
+  cminus.cup
+  Minimal CUP spec just to generate token constants
+  (I will expand this into the full parser later)
+*/
+
+package scanner;
+
+import absyn.*;
+
+/* Parser code for error reporting */
+parser code {:
+    public void report_error(String message, Object info) {
+        StringBuffer m = new StringBuffer("Error");
+        
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+            if (s.left >= 0) {                
+                m.append(" in line " + (s.left + 1));   
+                if (s.right >= 0) {                    
+                    m.append(", column " + (s.right + 1));
+                }
+            }
+        }
+        m.append(" : " + message);
+        System.err.println(m);
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+
+/* Terminal symbols (tokens) */
+terminal BOOL, ELSE, IF, INT, RETURN, VOID, WHILE;
+terminal TRUE, FALSE;
+terminal PLUS, MINUS, TIMES, OVER;
+terminal LT, LE, GT, GE, EQEQ, NE;
+terminal ASSIGN, SEMI, COMMA;
+terminal LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
+terminal NOT, AND, OR;
+terminal String ID, NUM;
+terminal ERROR;
+
+/* Non-terminals (we'll add these properly later) */
+non terminal program;
+
+/* Start symbol */
+start with program;
+
+/* Minimal grammar rule (we'll expand this later) */
+program ::= /* empty for now */ ;
