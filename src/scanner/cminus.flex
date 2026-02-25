@@ -1,9 +1,3 @@
-/*
-  cminus.flex
-  Scanner for the C- language
-*/
-package scanner;
-   
 import java_cup.runtime.*;
       
 %%

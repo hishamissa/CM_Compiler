@@ -7,14 +7,12 @@ CUP=$(JAVA) -cp $(CUPJAR) java_cup.Main
 
 all:
 	mkdir -p bin
-	$(JFLEX) -d src/scanner src/scanner/cminus.flex
-	$(CUP) -destdir src/scanner -parser parser src/parser/cminus.cup
-	$(JAVAC) -cp $(CUPRUNTIME):. -d bin src/scanner/Lexer.java src/scanner/sym.java
+	$(JFLEX) -d . src/scanner/cminus.flex
+	$(CUP) -destdir . -expect 1 src/parser/cminus.cup
+	$(JAVAC) -cp $(CUPRUNTIME):. -d bin src/absyn/*.java Lexer.java sym.java src/CM.java
 
 clean:
 	rm -rf bin
-	rm -f src/scanner/Lexer.java
-	rm -f src/scanner/sym.java
-	rm -f src/scanner/parser.java
+	rm -f Lexer.java sym.java parser.java
 
 .PHONY: all clean

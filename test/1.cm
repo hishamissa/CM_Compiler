@@ -1,0 +1,15 @@
+/* Simple factorial program */
+int main(void) {
+    int x;
+    int fact;
+    
+    x = 5;
+    fact = 1;
+    
+    while (x > 1) {
+        fact = fact * x;
+        x = x - 1;
+    }
+    
+    return fact;
+}
