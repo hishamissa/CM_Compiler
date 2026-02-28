@@ -2,24 +2,42 @@ import absyn.*;
 
 parser code {:
     public void report_error(String message, Object info) {
-        StringBuffer m = new StringBuffer("Error");
+        // Only report our custom error messages, not CUP's automatic ones
+        if (message.equals("Syntax error") || 
+            message.equals("Couldn't repair and continue parse")) {
+            return;
+        }
+        
+        StringBuffer m = new StringBuffer();
         
         if (info instanceof java_cup.runtime.Symbol) {
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-            if (s.left >= 0) {                
-                m.append(" in line " + (s.left + 1));
+            if (s.left >= 0) {
+                m.append("Line " + (s.left + 1));
                 if (s.right >= 0) {
                     m.append(", column " + (s.right + 1));
                 }
+                m.append(": ");
             }
         }
-        m.append(" : " + message);
+        
+        m.append(message);
         System.err.println(m);
     }
    
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
         System.exit(1);
+    }
+    
+    // Suppress CUP's automatic syntax error messages completely
+    public void syntax_error(java_cup.runtime.Symbol cur_token) {
+        // Do nothing
+    }
+    
+    // Suppress CUP's "unrecovered syntax error" messages
+    public void unrecovered_syntax_error(java_cup.runtime.Symbol cur_token) {
+        // Do nothing
     }
 :};
 
@@ -93,6 +111,11 @@ declaration_list ::= declaration_list:d1 declaration:d2
                      :}
                    | declaration:d
                      {: RESULT = new DecList(d, null); :}
+                   | declaration_list:d1 error:e
+                     {: parser.report_error("Invalid declaration", 
+                                            new java_cup.runtime.Symbol(0, eleft, eright));
+                        RESULT = d1;
+                     :}
                    ;
 
 declaration ::= var_declaration:v
@@ -107,6 +130,11 @@ var_declaration ::= type_specifier:t ID:i SEMI
                     {: RESULT = new SimpleDec(tleft, t.intValue(), i); :}
                   | type_specifier:t ID:i LBRACKET NUM:n RBRACKET SEMI
                     {: RESULT = new ArrayDec(tleft, t.intValue(), i, Integer.parseInt(n)); :}
+                  | error:e SEMI
+                    {: parser.report_error("Malformed variable declaration", 
+                                           new java_cup.runtime.Symbol(0, eleft, eright));
+                       RESULT = null;
+                    :}
                   ;
 
 type_specifier ::= BOOL:b
@@ -119,10 +147,20 @@ type_specifier ::= BOOL:b
 
 fun_declaration ::= type_specifier:t ID:i LPAREN params:p RPAREN compound_stmt:c
                     {: RESULT = new FunctionDec(tleft, t.intValue(), i, p, c); :}
+                  | type_specifier:t ID:i LPAREN error:e RPAREN compound_stmt:c
+                    {: parser.report_error("Invalid function parameter list", 
+                                           new java_cup.runtime.Symbol(0, eleft, eright));
+                       RESULT = new FunctionDec(tleft, t.intValue(), i, null, c);
+                    :}
                   ;
 
 fun_prototype ::= type_specifier:t ID:i LPAREN params:p RPAREN SEMI
                   {: RESULT = new FunctionProtoDec(tleft, t.intValue(), i, p); :}
+                | type_specifier:t ID:i LPAREN error:e RPAREN SEMI
+                  {: parser.report_error("Invalid prototype parameter list", 
+                                         new java_cup.runtime.Symbol(0, eleft, eright));
+                     RESULT = new FunctionProtoDec(tleft, t.intValue(), i, null);
+                  :}
                 ;
 
 params ::= param_list:p
@@ -150,6 +188,11 @@ param ::= type_specifier:t ID:i
 
 compound_stmt ::= LBRACE:l local_declarations:d statement_list:s RBRACE
                   {: RESULT = new CompoundExp(lleft, d, s); :}
+                | LBRACE:l local_declarations:d statement_list:s error:e
+                  {: parser.report_error("Missing closing brace", 
+                                         new java_cup.runtime.Symbol(0, eleft, eright));
+                     RESULT = new CompoundExp(lleft, d, s);
+                  :}
                 ;
 
 local_declarations ::= local_declarations:d var_declaration:v
@@ -180,6 +223,11 @@ statement_list ::= statement_list:s1 statement:s2
                    :}
                  | /* empty */
                    {: RESULT = null; :}
+                 | statement_list:s1 error:e SEMI
+                   {: parser.report_error("Invalid statement", 
+                                          new java_cup.runtime.Symbol(0, eleft, eright));
+                      RESULT = s1;
+                   :}
                  ;
 
 statement ::= expression_stmt:e
@@ -198,22 +246,47 @@ expression_stmt ::= expression:e SEMI
                     {: RESULT = e; :}
                   | SEMI
                     {: RESULT = new NilExp(0); :}
+                  | error:e SEMI
+                    {: parser.report_error("Invalid expression or missing semicolon", 
+                                           new java_cup.runtime.Symbol(0, eleft, eright));
+                       RESULT = new NilExp(0);
+                    :}
                   ;
 
 selection_stmt ::= IF:i LPAREN expression:e RPAREN statement:s1
                    {: RESULT = new IfExp(ileft, e, s1, null); :}
                  | IF:i LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
                    {: RESULT = new IfExp(ileft, e, s1, s2); :}
+                 | IF:i LPAREN error:e RPAREN statement:s1
+                   {: parser.report_error("Invalid condition in if statement", 
+                                          new java_cup.runtime.Symbol(0, eleft, eright));
+                      RESULT = new IfExp(ileft, new NilExp(ileft), s1, null);
+                   :}
+                 | IF:i LPAREN error:e RPAREN statement:s1 ELSE statement:s2
+                   {: parser.report_error("Invalid condition in if-else statement", 
+                                          new java_cup.runtime.Symbol(0, eleft, eright));
+                      RESULT = new IfExp(ileft, new NilExp(ileft), s1, s2);
+                   :}
                  ;
 
 iteration_stmt ::= WHILE:w LPAREN expression:e RPAREN statement:s
                    {: RESULT = new WhileExp(wleft, e, s); :}
+                 | WHILE:w LPAREN error:e RPAREN statement:s
+                   {: parser.report_error("Invalid condition in while loop", 
+                                          new java_cup.runtime.Symbol(0, eleft, eright));
+                      RESULT = new WhileExp(wleft, new NilExp(wleft), s);
+                   :}
                  ;
 
 return_stmt ::= RETURN:r expression:e SEMI
                 {: RESULT = new ReturnExp(rleft, e); :}
               | RETURN:r SEMI
                 {: RESULT = new ReturnExp(rleft, null); :}
+              | RETURN:r error:e SEMI
+                {: parser.report_error("Invalid return statement", 
+                                       new java_cup.runtime.Symbol(0, eleft, eright));
+                   RESULT = new ReturnExp(rleft, null);
+                :}
               ;
 
 expression ::= var:v ASSIGN expression:e
@@ -226,6 +299,11 @@ var ::= ID:i
         {: RESULT = new SimpleVar(ileft, i); :}
       | ID:i LBRACKET expression:e RBRACKET
         {: RESULT = new IndexVar(ileft, i, e); :}
+      | ID:i LBRACKET error:e RBRACKET
+        {: parser.report_error("Invalid array index expression", 
+                               new java_cup.runtime.Symbol(0, eleft, eright));
+           RESULT = new IndexVar(ileft, i, new NilExp(ileft));
+        :}
       ;
 
 simple_expression ::= additive_expression:a1 LT additive_expression:a2
@@ -266,6 +344,11 @@ term ::= term:t TIMES factor:f
 
 factor ::= LPAREN expression:e RPAREN
            {: RESULT = e; :}
+         | LPAREN error:e RPAREN
+           {: parser.report_error("Invalid expression in parentheses", 
+                                  new java_cup.runtime.Symbol(0, eleft, eright));
+              RESULT = new NilExp(0);
+           :}
          | var:v
            {: RESULT = new VarExp(vleft, v); :}
          | call:c
@@ -280,10 +363,20 @@ factor ::= LPAREN expression:e RPAREN
            {: RESULT = new OpExp(mleft, null, OpExp.UMINUS, f); :}
          | NOT:n factor:f
            {: RESULT = new OpExp(nleft, null, OpExp.NOT, f); :}
+         | ERROR:e
+           {: parser.report_error("Invalid token in expression", 
+                                  new java_cup.runtime.Symbol(0, eleft, eright));
+              RESULT = new NilExp(eleft);
+           :}
          ;
 
 call ::= ID:i LPAREN args:a RPAREN
          {: RESULT = new CallExp(ileft, i, a); :}
+       | ID:i LPAREN error:e RPAREN
+         {: parser.report_error("Invalid function call arguments", 
+                                new java_cup.runtime.Symbol(0, eleft, eright));
+            RESULT = new CallExp(ileft, i, null);
+         :}
        ;
 
 args ::= arg_list:a

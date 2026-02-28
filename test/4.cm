@@ -1,0 +1,26 @@
+/*
+ * Test File: 4.cm
+ * Contains 3 syntax errors in expressions and control structures
+ *   Line 14: Invalid array index expression (multiple operators)
+ *   Line 17: Invalid condition in if statement (malformed expression)
+ *   Line 21: Invalid condition in while loop (missing operand)
+ * The parser should report specific error messages for array indexing, if conditions, and while conditions
+ */
+
+void main(void) {
+    int arr[10];
+    int i;
+    
+    arr[5 + + +] = 10;
+    
+    i = 0;
+    if (< > ==) {
+        i = 5;
+    }
+    
+    while (i < ) {
+        i = i + 1;
+    }
+    
+    output(i);
+}

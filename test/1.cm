@@ -1,15 +1,35 @@
-/* Simple factorial program */
-int main(void) {
-    int x;
-    int fact;
+/*
+ * Test File: 1.cm
+ * A Valid C- program with no errors
+ * Demonstrates successful parsing of all major language constructs
+ * Compiles successfully, produces a complete AST
+ */
+
+int x;
+bool flag;
+
+int factorial(int n) {
+    int result;
+    result = 1;
     
-    x = 5;
-    fact = 1;
-    
-    while (x > 1) {
-        fact = fact * x;
-        x = x - 1;
+    while (n > 1) {
+        result = result * n;
+        n = n - 1;
     }
     
-    return fact;
+    return result;
+}
+
+void main(void) {
+    int num;
+    int fact;
+    
+    num = input();
+    
+    if (num > 0) {
+        fact = factorial(num);
+        output(fact);
+    } else {
+        output(0);
+    }
 }

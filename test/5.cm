@@ -1,0 +1,50 @@
+/*
+ * Test File: 5.cm
+ * A comprehensive stress test with multiple error types to test the parser's ability to continue through cascading errors
+ * Errors include:
+ *   - Malformed variable declarations
+ *   - Invalid expressions
+ *   - Missing semicolons
+ *   - Invalid array indices
+ *   - Malformed function calls
+ *   - Invalid control flow constructs
+ *   - Lexical errors (invalid tokens)
+ * The parser should detect and report multiple errors across the different categories while attempting to continue parsing and building a partial AST
+ */
+
+int x
+int y[;
+
+void test(int a, , int b) {
+    int local;
+    
+    local = 5 + + +;
+    bad statement;
+    x = @@ + 5;
+    
+    if (a > ) {
+        local = 10;
+    }
+    
+    while {
+        local = local + 1;
+    }
+    
+    return;
+}
+
+void main(void) {
+    int arr[10];
+    int i;
+    
+    arr[$$] = 5;
+    i = test(1, 2, );
+    
+    if (i > 0
+        output(i);
+    
+    while (i < 10) {
+        arr[i + *] = i;
+        i = i + 1
+    }
+}

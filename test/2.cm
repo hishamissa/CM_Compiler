@@ -1,0 +1,24 @@
+/*
+ * Test File: 2.cm
+ * Contains 3 syntax errors from invalid tokens
+ *   Line 14: Invalid token '@' causing a syntax error in expression
+ *   Line 17: Invalid token '$$' causing a syntax error in assignment  
+ *   Line 21: Invalid token '#' causing a syntax error at statement level
+ * The parser should detect all 3 invalid statements where unexpected tokens appear and continue parsing
+ */
+
+void main(void) {
+    int x;
+    int y;
+    
+    x = 5 @ 3;
+    
+    y = 10;
+    y = $$ + 5;
+    
+    x = x + y;
+    
+    # invalid;
+    
+    output(x);
+}

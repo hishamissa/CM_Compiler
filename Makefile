@@ -8,7 +8,7 @@ CUP=$(JAVA) -cp $(CUPJAR) java_cup.Main
 all:
 	mkdir -p bin
 	$(JFLEX) -d . src/scanner/cminus.flex
-	$(CUP) -destdir . -expect 1 src/parser/cminus.cup
+	$(CUP) -destdir . -expect 5 src/parser/cminus.cup
 	$(JAVAC) -cp $(CUPRUNTIME):. -d bin src/absyn/*.java Lexer.java sym.java src/CM.java
 
 clean:
