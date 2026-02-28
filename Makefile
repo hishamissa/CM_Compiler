@@ -1,6 +1,6 @@
 JAVA=java
 JAVAC=javac
-JFLEX=/opt/homebrew/bin/jflex
+JFLEX=jflex
 CUPJAR=./lib/java-cup-11b.jar
 CUPRUNTIME=./lib/java-cup-11b-runtime.jar
 CUP=$(JAVA) -cp $(CUPJAR) java_cup.Main
