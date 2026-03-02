@@ -2,7 +2,7 @@
 
 Hisham Issa | 1194466 | hissa01@uoguelph.ca | Feb 28, 2026
 
-## What This Is
+## The Project
 
 This is a compiler front-end for the C- language. It takes C- source code and scans it into tokens, parses it based to the C- grammar, builds an abstract syntax tree, and recovers from errors to report them with line and column numbers.
 
@@ -38,32 +38,12 @@ test/3.cm - 3 syntax errors in statements (missing expressions, bad syntax, miss
 test/4.cm - 3 errors showing specific error messages (array indexing, if conditions, while conditions)
 test/5.cm - Stress test with 10+ errors of different types
 
-Each file has a comment header explaining what errors it contains and what it's testing.
-
 Quick test commands:
 java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a test/1.cm (should show full AST)
 java -cp ./lib/java-cup-11b-runtime.jar:bin CM test/4.cm (should show 3 specific errors)
 
-## Project Structure
 
-CM_Compiler/
-├── Makefile              # Build configuration
-├── README.md             # This file
-├── lib/                  # CUP runtime jars
-├── src/
-│   ├── CM.java           # Main driver
-│   ├── ShowTreeVisitor.java
-│   ├── absyn/            # AST node classes
-│   ├── parser/
-│   │   └── cminus.cup    # Parser specification
-│   └── scanner/
-│       └── cminus.flex   # Scanner specification
-├── test/                 # Test programs (1.cm - 5.cm)
-└── docs/
-    └── report.pdf        # Project report
-
-
-## What It Does
+## How It Works
 
 Scanner: Recognizes all C- tokens including keywords, operators, identifiers, numbers, and handles C-style comments. Tracks line and column numbers for error reporting.
 
