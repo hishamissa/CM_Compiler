@@ -1,0 +1,8 @@
+Entering scope: global
+  Entering scope: function main
+    z: int
+  Leaving scope: function main
+  x: int
+  y: bool
+  main: (void) -> void
+Leaving scope: global

@@ -1,0 +1,10 @@
+int x;
+
+void foo(int a) {
+    int b;
+    int d;
+}
+
+void main(void) {
+    int y;
+}

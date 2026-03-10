@@ -1,0 +1,6 @@
+int x;
+bool y;
+
+void main(void) {
+    int z;
+}

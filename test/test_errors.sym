@@ -1,0 +1,7 @@
+Entering scope: global
+  Entering scope: function main
+  Leaving scope: function main
+  bad: int
+  x: int
+  main: (void) -> void
+Leaving scope: global
