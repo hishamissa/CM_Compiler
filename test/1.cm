@@ -1,35 +1,53 @@
 /*
- * Test File: 1.cm
- * A Valid C- program with no errors
- * Demonstrates successful parsing of all major language constructs
- * Compiles successfully, produces a complete AST
+ * Test 1: Clean Program w/ No Errors
+ * 
+ * This program should compile without any syntax or semantic errors.
+ * Tests:
+ * - Global variable declarations
+ * - Function declarations with parameters
+ * - Local variable declarations
+ * - Array declarations and usage
+ * - Function calls with correct arguments
+ * - Return statements with correct types
+ * - Control flow statements (if/while)
+ * - Arithmetic and boolean operations
  */
 
 int x;
+int arr[10];
 bool flag;
 
-int factorial(int n) {
-    int result;
-    result = 1;
-    
-    while (n > 1) {
-        result = result * n;
-        n = n - 1;
+int max(int a, int b) {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
     }
-    
-    return result;
+}
+
+void processArray(int data[], int size) {
+    int i;
+    i = 0;
+    while (i < size) {
+        data[i] = i * 2;
+        i = i + 1;
+    }
 }
 
 void main(void) {
-    int num;
-    int fact;
+    int result;
+    int y;
     
-    num = input();
+    x = 10;
+    y = 20;
+    result = max(x, y);
     
-    if (num > 0) {
-        fact = factorial(num);
-        output(fact);
-    } else {
-        output(0);
+    flag = result > 15;
+    
+    if (flag) {
+        output(result);
     }
+    
+    processArray(arr, 10);
+    output(arr[5]);
 }

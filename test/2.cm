@@ -1,24 +1,25 @@
 /*
- * Test File: 2.cm
- * Contains 3 syntax errors from invalid tokens
- *   Line 14: Invalid token '@' causing a syntax error in expression
- *   Line 17: Invalid token '$$' causing a syntax error in assignment  
- *   Line 21: Invalid token '#' causing a syntax error at statement level
- * The parser should detect all 3 invalid statements where unexpected tokens appear and continue parsing
+ * Test 2: Symbol Table Errors
+ * 
+ * This test has exactly 3 semantic errors related to symbol table issues:
+ * Error 1 (Line 15): Variable 'x' is redeclared in the same scope
+ * Error 2 (Line 17): Variable 'undeclared' is used without being declared
+ * Error 3 (Line 23): Function 'unknownFunc' is called but not defined
  */
 
-void main(void) {
+int x;
+
+void foo(int a) {
+    int b;
     int x;
+    int x;
+    
+    b = undeclared;
+}
+
+void main(void) {
     int y;
     
-    x = 5 @ 3;
-    
-    y = 10;
-    y = $$ + 5;
-    
-    x = x + y;
-    
-    # invalid;
-    
-    output(x);
+    y = unknownFunc(5);
+    output(y);
 }

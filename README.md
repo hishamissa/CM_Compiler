@@ -1,73 +1,160 @@
-# CIS 4650 - Checkpoint One
+# C- Compiler - CIS*4650
 
-Hisham Issa | 1194466 | hissa01@uoguelph.ca | Feb 28, 2026
+**Hisham Issa** | 1194466 | hissa01@uoguelph.ca | March 16, 2026
 
-## The Project
+## Overview
 
-This is a compiler front-end for the C- language. It takes C- source code and scans it into tokens, parses it based to the C- grammar, builds an abstract syntax tree, and recovers from errors to report them with line and column numbers.
+This is a compiler for the C- language, developed across multiple checkpoints for CIS 4650 (Compilers). My compiler performs lexical analysis, syntax analysis, semantic analysis, and type checking on C- source programs.
 
-Built using JFlex for scanning and CUP for parsing.
+Built using:
+- **JFlex** for lexical analysis (scanning)
+- **CUP** for syntax analysis (parsing)
+- **Custom visitor pattern** for semantic analysis
+
+---
 
 ## Building the Compiler
 
-Requirements: Java 8 or higher, JFlex, CUP
+**Requirements:** Java 8 or higher, JFlex, CUP (included in `lib/`)
 
-Build commands:
-- make clean (removes all generated files)
-- make (builds everything)
+**Build commands:**
+```bash
+make clean    # Removes all generated files
+make          # Builds the complete compiler
+```
 
-This generates the scanner, parser, and compiles everything to the bin directory.
+This generates the scanner (`Lexer.java`), parser (`parser.java` and `sym.java`), and compiles everything to the `bin/` directory.
+
+---
 
 ## Running the Compiler
 
-Parse a file and show the AST:
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a yourfile.cm
+### Command-Line Options
 
-Parse a file without showing the AST:
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM yourfile.cm
+**Parse and display Abstract Syntax Tree:**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a <filename.cm>
+```
+Creates `<filename>.abs` containing the abstract syntax tree.
 
-If there are errors, they'll be reported with line and column numbers. The compiler will try to find multiple errors in one run.
+**Perform semantic analysis and display symbol table:**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s <filename.cm>
+```
+Creates `<filename>.sym` containing the symbol table with scope information.
+
+**Both AST and symbol table:**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s <filename.cm>
+```
+Creates both `.abs` and `.sym` output files.
+
+**Parse only (no output files):**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM <filename.cm>
+```
+Reports errors to stderr if any are found.
+
+### Error Reporting
+
+All errors are reported to stderr with line numbers and descriptive messages. My compiler attempts to recover from errors and continue processing to report as many issues as possible in a single run.
+
+**Note:** If syntax errors are detected then semantic analysis is skipped (partial ASTs are not analyzed).
+
+---
 
 ## Test Files
 
-I included 5 test programs in the test directory:
+The five test programs are included in the `test/` directory (more specific information about the errors can be found in the header comments inside each file):
 
-test/1.cm - Clean program with no errors (tests that everything parses correctly)
-test/2.cm - 3 statement-level errors from invalid tokens
-test/3.cm - 3 syntax errors in statements (missing expressions, bad syntax, missing semicolon)
-test/4.cm - 3 errors showing specific error messages (array indexing, if conditions, while conditions)
-test/5.cm - Stress test with 10+ errors of different types
+**test/1.cm**: Clean program with no errors
+- Tests: global variables, arrays, functions with parameters, local variables, function calls, control flow, arithmetic and boolean operations
+- Expected: No errors, complete symbol table with proper scoping
 
-Quick test commands:
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a test/1.cm (should show full AST)
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM test/4.cm (should show 3 specific errors)
+**test/2.cm**: Symbol table errors (3 errors)
+- Redefined variable in same scope
+- Undefined variable reference
+- Undefined function call
 
+**test/3.cm**: Type checking errors (3 errors)
+- Type mismatch in arithmetic operation (bool and int)
+- Type mismatch in assignment (bool to int)
+- Non-integer array index (bool)
 
-## How It Works
+**test/4.cm**: Function call and return errors (3 errors)
+- Void function returning a value
+- Wrong number of function arguments
+- Argument type mismatch
 
-Scanner: Recognizes all C- tokens including keywords, operators, identifiers, numbers, and handles C-style comments. Tracks line and column numbers for error reporting.
+**test/5.cm** - Comprehensive stress test (18 errors)
+- Multiple error types: undefined symbols, redefinitions, type mismatches, void variables, array errors, function errors, return type mismatches
 
-Parser: Builds a complete abstract syntax tree using a simplified expression grammar with precedence directives. Supports all C- language constructs including functions, arrays, control flow, and expressions.
+**Additional tests that were provided:**
+- `test/fac.cm`: Factorial calculation
+- `test/gcd.cm`: Greatest common divisor (Euclid's algorithm)
 
-Error Recovery: Reports multiple errors per file with line and column numbers. Provides context-specific error messages when possible. Continues parsing after errors to find as many problems as possible in one run.
+### Running the Tests
+```bash
+# Test clean program (should produce no errors)
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/1.cm
+
+# Test semantic errors (should report 3 specific errors)
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/2.cm
+
+# Test with both AST and symbol table output
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s test/gcd.cm
+```
+---
 
 ## Example Output
 
-Running a clean file:
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a test/1.cm
+### Successful Compilation with Symbol Table
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/gcd.cm
+```
 
-Shows the full AST with proper indentation showing the tree structure.
+**Output:**
+```
+Symbol table saved to test/gcd.sym
+```
 
-Running a file with errors:
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM test/4.cm
+**test/gcd.sym contents:**
+```
+Entering scope: global
+  Entering scope: function gcd
+    u: int
+    v: int
+  Leaving scope: function gcd
+  Entering scope: function main
+    x: int
+    y: int
+  Leaving scope: function main
+  gcd: (int, int) -> int
+  main: (void) -> void
+Leaving scope: global
+```
 
-Output:
-Line 14, column 11: Invalid array index expression
-Line 17, column 8: Invalid condition in if statement
-Line 21, column 14: Invalid condition in while loop
+### Error Detection
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/3.cm
+```
 
-## Notes
+**Output:**
+```
+Error at line 15: Left operand of arithmetic operator must be integer
+Error at line 16: Type mismatch in assignment
+Error at line 17: Array index must be an integer
 
-The compiler is designed to run on linux.socs.uoguelph.ca and has been tested there. All test files work correctly and demonstrate the different capabilities of the scanner, parser, and error recovery system.
+Semantic analysis completed with errors.
+Symbol table saved to test/3.sym
+```
 
-For more details, see the project report in docs/report.pdf.
+---
+
+## Project Documentation
+
+For more details, see the project documentation for each checkpoint. These can be found in the `docs/` directory:
+- `Checkpoint One Documentation.pdf` - Lexical and syntax analysis design and implementation
+- `Checkpoint Two Documentation.pdf` - Semantic analysis and type checking design and implementation
+
+---

@@ -7,6 +7,13 @@ Lexer.java
 # Build directory
 bin/
 
+# Output files
+*.sym
+*.abs
+
+# Backup files
+*~
+
 # macOS
 .DS_Store
 
@@ -15,6 +22,9 @@ bin/
 *.swp
 *.swo
 
+# Archives
+*.tar.gz
+*.zip
+
 # Logs
 *.log
-Lexer.java~

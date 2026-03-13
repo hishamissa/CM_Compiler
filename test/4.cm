@@ -1,26 +1,27 @@
 /*
- * Test File: 4.cm
- * Contains 3 syntax errors in expressions and control structures
- *   Line 14: Invalid array index expression (multiple operators)
- *   Line 17: Invalid condition in if statement (malformed expression)
- *   Line 21: Invalid condition in while loop (missing operand)
- * The parser should report specific error messages for array indexing, if conditions, and while conditions
+ * Test 4: Function Call and Return Errors
+ * 
+ * This test has exactly 3 semantic errors related to functions:
+ * Error 1 (Line 17): Void function 'doNothing' cannot return a value
+ * Error 2 (Line 24): Function 'add' expects 2 arguments but receives 1
+ * Error 3 (Line 25): Argument type mismatch - passing bool to int parameter
  */
 
+int add(int a, int b) {
+    return a + b;
+}
+
+void doNothing(void) {
+    int x;
+    x = 5;
+    return x;
+}
+
 void main(void) {
-    int arr[10];
-    int i;
+    int result;
+    bool flag;
     
-    arr[5 + + +] = 10;
-    
-    i = 0;
-    if (< > ==) {
-        i = 5;
-    }
-    
-    while (i < ) {
-        i = i + 1;
-    }
-    
-    output(i);
+    result = add(10);
+    result = add(flag, 20);
+    output(result);
 }

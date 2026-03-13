@@ -1,7 +1,0 @@
-void bad;
-int x;
-int x;
-
-void main(void) {
-    int y;
-}

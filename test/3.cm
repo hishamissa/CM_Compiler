@@ -1,22 +1,20 @@
 /*
- * Test File: 3.cm
- * Contains 3 syntax errors in statements
- *   Line 14: Missing expression in assignment (x = ;)
- *   Line 17: Invalid statement, random identifiers
- *   Line 19: Missing semicolon after assignment
- * The parser should report "Invalid expression or missing semicolon", "Invalid statement" (twice)
+ * Test 3: Type Checking Errors
+ * 
+ * This test has exactly 3 semantic errors related to type mismatches:
+ * Error 1 (Line 15): Cannot add bool and int (type mismatch in arithmetic)
+ * Error 2 (Line 16): Cannot assign bool to int variable
+ * Error 3 (Line 17): Array index must be int, not bool
  */
 
 void main(void) {
     int x;
-    int y;
+    bool flag;
+    int nums[5];
     
-    x = ;
+    x = flag + 10;
+    x = flag;
+    x = nums[flag];
     
-    y = 5;
-    bad syntax here;
-    
-    x = 10
-    
-    output(y);
+    output(x);
 }

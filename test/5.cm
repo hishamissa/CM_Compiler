@@ -1,50 +1,75 @@
 /*
- * Test File: 5.cm
- * A comprehensive stress test with multiple error types to test the parser's ability to continue through cascading errors
- * Errors include:
- *   - Malformed variable declarations
- *   - Invalid expressions
- *   - Missing semicolons
- *   - Invalid array indices
- *   - Malformed function calls
- *   - Invalid control flow constructs
- *   - Lexical errors (invalid tokens)
- * The parser should detect and report multiple errors across the different categories while attempting to continue parsing and building a partial AST
+ * Test 5: Comprehensive Stress Test
+ * 
+ * This test contains multiple semantic errors of various types to thoroughly test the compiler's error detection and recovery.
+ * Expected errors:
+ * - Undefined variables and functions
+ * - Redefined symbols
+ * - Type mismatches in operations
+ * - Type mismatches in assignments
+ * - Incorrect function arguments
+ * - Return type mismatches
+ * - Void variables
+ * - Array indexing errors
+ * - Void expressions in conditions
  */
 
-int x
-int y[;
+void badVar;
+int x;
+int x;
 
-void test(int a, , int b) {
-    int local;
-    
-    local = 5 + + +;
-    bad statement;
-    x = @@ + 5;
-    
-    if (a > ) {
-        local = 10;
-    }
-    
-    while {
-        local = local + 1;
-    }
-    
+int wrongReturn(void) {
     return;
 }
 
-void main(void) {
-    int arr[10];
-    int i;
+void cantReturnValue(void) {
+    return 42;
+}
+
+int needsReturn(int n) {
+    int result;
+    result = n;
+}
+
+void typeErrors(int a) {
+    int b;
+    bool c;
+    int arr[5];
     
-    arr[$$] = 5;
-    i = test(1, 2, );
+    b = a + c;
+    c = a;
+    b = c;
+    arr[c] = 10;
+    b = notDefined;
+    c = x[5];
     
-    if (i > 0
-        output(i);
-    
-    while (i < 10) {
-        arr[i + *] = i;
-        i = i + 1
+    if (wrongReturn()) {
+        b = 1;
     }
+    
+    while (cantReturnValue()) {
+        b = b - 1;
+    }
+}
+
+void argErrors(void) {
+    int z;
+    bool flag;
+    
+    z = wrongReturn(10);
+    typeErrors();
+    typeErrors(flag, z);
+    z = missingFunc(5);
+}
+
+void main(void) {
+    int a;
+    int duplicate;
+    int duplicate;
+    
+    a = undefined + 5;
+    duplicate = 10;
+    
+    argErrors();
+    output(a);
 }
