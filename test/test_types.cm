@@ -1,0 +1,25 @@
+int x;
+bool flag;
+int arr[10];
+
+void output(int n) { }
+
+void main(void) {
+    int a;
+    bool b;
+    
+    a = x + 5;
+    a = flag + 5;
+    b = x < 10;
+    b = flag < 10;
+    a = x;
+    a = flag;
+    flag = b;
+    flag = a;
+    a = arr[5];
+    a = arr[flag];
+    b = x && flag;
+    a = -x;
+    a = -flag;
+    x = output(3);
+}

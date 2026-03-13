@@ -1,0 +1,19 @@
+int x;
+int arr[10];
+
+void foo(int a) {
+    int b;
+    b = a;
+    b = missing;
+    c = b;
+}
+
+void main(void) {
+    int y;
+    y = x;
+    y = arr[5];
+    y = nonexistent[0];
+    y = notavar;
+    foo(y);
+    bar(y);
+}

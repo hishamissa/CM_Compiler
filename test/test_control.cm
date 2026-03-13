@@ -1,0 +1,15 @@
+void doNothing(void) {
+}
+
+void main(void) {
+    int x;
+    bool flag;
+    
+    if (x) x = 5;
+    if (flag) x = 10;
+    if (doNothing()) x = 15;
+    
+    while (x > 0) x = x - 1;
+    while (flag) x = 0;
+    while (doNothing()) x = 1;
+}

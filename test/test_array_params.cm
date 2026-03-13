@@ -1,0 +1,12 @@
+void processArray(int arr[], int size) {
+    arr[0] = size;
+}
+
+void main(void) {
+    int numbers[10];
+    int x;
+    
+    processArray(numbers, 10);
+    processArray(x, 10);
+    processArray(numbers, true);
+}

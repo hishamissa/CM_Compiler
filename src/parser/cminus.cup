@@ -1,8 +1,11 @@
 import absyn.*;
 
 parser code {:
+    public static boolean hasParseErrors = false;
+    
     public void report_error(String message, Object info) {
-        // Only report our custom error messages, not CUP's automatic ones
+        hasParseErrors = true;  // Track that an error occurred
+        
         if (message.equals("Syntax error") || 
             message.equals("Couldn't repair and continue parse")) {
             return;

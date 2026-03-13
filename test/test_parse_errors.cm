@@ -1,0 +1,5 @@
+int x
+
+void main(void) {
+    int y;
+}

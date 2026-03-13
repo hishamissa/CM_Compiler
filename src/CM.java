@@ -39,20 +39,36 @@ public class CM {
         }
         
         try {
+            // Reset parser error flag
+            parser.hasParseErrors = false;
+            
             // Parse input file and build AST
             parser p = new parser(new Lexer(new FileReader(filename)));
-            Absyn result = (Absyn)(p.parse().value);
+            Object parseResult = p.parse().value;
+            
+            // Check if parsing succeeded and returned an AST
+            if (parser.hasParseErrors || !(parseResult instanceof Absyn)) {
+                System.err.println("\nParsing failed. Semantic analysis skipped.");
+                return;
+            }
+            
+            Absyn result = (Absyn) parseResult;
             
             // Display AST if -a flag specified
             if (SHOW_TREE && result != null) {
-                System.out.println("Abstract syntax tree:");
-                ShowTreeVisitor visitor = new ShowTreeVisitor();
-                result.accept(visitor, 0);
+                String absFilename = filename.substring(0, filename.lastIndexOf('.')) + ".abs";
+                PrintWriter absOut = new PrintWriter(new FileWriter(absFilename));
+                
+                absOut.println("Abstract syntax tree:");
+                ShowTreeVisitor treeVisitor = new ShowTreeVisitor(absOut);
+                result.accept(treeVisitor, 0);
+                
+                absOut.close();
+                System.out.println("Abstract syntax tree saved to " + absFilename);
             }
             
             // Perform semantic analysis if -s flag specified
             if (SHOW_TABLE && result != null) {
-                // Create output file: replace .cm extension with .sym
                 String symFilename = filename.substring(0, filename.lastIndexOf('.')) + ".sym";
                 PrintWriter symOut = new PrintWriter(new FileWriter(symFilename));
                 
@@ -60,6 +76,10 @@ public class CM {
                 result.accept(analyzer, 0);
                 
                 symOut.close();
+                
+                if (SemanticAnalyzer.hasSemanticErrors) {
+                    System.err.println("\nSemantic analysis completed with errors.");
+                }
                 System.out.println("Symbol table saved to " + symFilename);
             }
             

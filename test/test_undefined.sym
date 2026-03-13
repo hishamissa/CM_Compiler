@@ -2,11 +2,11 @@ Entering scope: global
   Entering scope: function foo
     a: int
     b: int
-    d: int
   Leaving scope: function foo
   Entering scope: function main
     y: int
   Leaving scope: function main
+  arr: int[10]
   foo: (int) -> void
   x: int
   main: (void) -> void
