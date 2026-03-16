@@ -6,8 +6,7 @@ import java.io.PrintWriter;
 
 /**
  * SemanticAnalyzer performs semantic analysis on the AST.
- * Builds symbol table, checks for undefined/redefined identifiers,
- * and performs type checking on expressions and statements.
+ * Builds symbol table, checks for undefined/redefined identifiers, and performs type checking on expressions and statements.
  */
 public class SemanticAnalyzer implements AbsynVisitor {
     
