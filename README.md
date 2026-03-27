@@ -1,15 +1,15 @@
 # C- Compiler - CIS*4650
 
-**Hisham Issa** | 1194466 | hissa01@uoguelph.ca | March 16, 2026
+**Hisham Issa** | 1194466 | hissa01@uoguelph.ca | March 2026
 
 ## Overview
 
-This is a compiler for the C- language, developed across multiple checkpoints for CIS 4650 (Compilers). My compiler performs lexical analysis, syntax analysis, semantic analysis, and type checking on C- source programs.
+This is a complete compiler for the C- language, developed across three checkpoints for CIS*4650 (Compilers). The compiler performs lexical analysis, syntax analysis, semantic analysis, type checking, and TM assembly code generation.
 
 Built using:
 - **JFlex** for lexical analysis (scanning)
 - **CUP** for syntax analysis (parsing)
-- **Custom visitor pattern** for semantic analysis
+- **Custom visitor pattern** for semantic analysis and code generation
 
 ---
 
@@ -31,23 +31,29 @@ This generates the scanner (`Lexer.java`), parser (`parser.java` and `sym.java`)
 
 ### Command-Line Options
 
-**Parse and display Abstract Syntax Tree:**
+**Parse and display Abstract Syntax Tree (`-a`):**
 ```bash
 java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a <filename.cm>
 ```
 Creates `<filename>.abs` containing the abstract syntax tree.
 
-**Perform semantic analysis and display symbol table:**
+**Perform semantic analysis and display symbol table (`-s`):**
 ```bash
 java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s <filename.cm>
 ```
 Creates `<filename>.sym` containing the symbol table with scope information.
 
-**Both AST and symbol table:**
+**Generate TM assembly code (`-c`):**
 ```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s <filename.cm>
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c <filename.cm>
 ```
-Creates both `.abs` and `.sym` output files.
+Creates `<filename>.tm` containing TM assembly code. Only generates code if the program has no parse or semantic errors.
+
+**Combined flags:**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s -c <filename.cm>
+```
+Creates `.abs`, `.sym`, and `.tm` output files.
 
 **Parse only (no output files):**
 ```bash
@@ -55,106 +61,82 @@ java -cp ./lib/java-cup-11b-runtime.jar:bin CM <filename.cm>
 ```
 Reports errors to stderr if any are found.
 
-### Error Reporting
+---
 
-All errors are reported to stderr with line numbers and descriptive messages. My compiler attempts to recover from errors and continue processing to report as many issues as possible in a single run.
+## Running Generated TM Code
 
-**Note:** If syntax errors are detected then semantic analysis is skipped (partial ASTs are not analyzed).
+Generated `.tm` files can be executed using the TM simulator:
+```bash
+cd TMSimulator
+./tm <filename.tm>
+```
+
+Inside the simulator:
+- `g` — run the program
+- `t` — toggle instruction trace
+- `s N` — step N instructions
+- `r` — show register contents
+- `d b n` — show n memory locations starting at b
+- `q` — quit
 
 ---
 
 ## Test Files
 
-The five test programs are included in the `test/` directory (more specific information about the errors can be found in the header comments inside each file):
+The `test/` directory contains 15 C- programs:
 
-**test/1.cm**: Clean program with no errors
-- Tests: global variables, arrays, functions with parameters, local variables, function calls, control flow, arithmetic and boolean operations
-- Expected: No errors, complete symbol table with proper scoping
+### Required 10 Test Files
+| File | Description | Expected Result |
+|------|-------------|-----------------|
+| `1.cm` | Basic arithmetic and while loop | Compiles and runs, outputs 10 5 50 2 |
+| `2.cm` | Recursion and boolean variable | Compiles and runs, outputs factorial of input |
+| `3.cm` | Global array and array parameter | Compiles and runs, outputs input in reverse |
+| `4.cm` | Syntax errors | Rejected with parse errors |
+| `5.cm` | Semantic errors: undefined/redefined symbols | Rejected with semantic errors |
+| `6.cm` | Semantic errors: type mismatches | Rejected with semantic errors |
+| `7.cm` | Runtime bounds error (above) | Compiles, outputs -2000000 at runtime |
+| `8.cm` | Runtime bounds error (below) | Compiles, outputs -1000000 at runtime |
+| `9.cm` | Multiple mixed errors | Rejected with parse errors |
+| `0.cm` | Stress test with many errors | Rejected with parse errors |
 
-**test/2.cm**: Symbol table errors (3 errors)
-- Redefined variable in same scope
-- Undefined variable reference
-- Undefined function call
-
-**test/3.cm**: Type checking errors (3 errors)
-- Type mismatch in arithmetic operation (bool and int)
-- Type mismatch in assignment (bool to int)
-- Non-integer array index (bool)
-
-**test/4.cm**: Function call and return errors (3 errors)
-- Void function returning a value
-- Wrong number of function arguments
-- Argument type mismatch
-
-**test/5.cm** - Comprehensive stress test (18 errors)
-- Multiple error types: undefined symbols, redefinitions, type mismatches, void variables, array errors, function errors, return type mismatches
-
-**Additional tests that were provided:**
-- `test/fac.cm`: Factorial calculation
-- `test/gcd.cm`: Greatest common divisor (Euclid's algorithm)
+### Provided Test Programs
+| File | Description |
+|------|-------------|
+| `fac.cm` | Factorial (input: integer, output: factorial) |
+| `gcd.cm` | Greatest common divisor (input: two integers) |
+| `sort.cm` | Selection sort (input: 10 integers) |
+| `booltest.cm` | Factorial using boolean variable |
+| `mutual.cm` | Mutual recursion with function prototype |
 
 ### Running the Tests
+
+**Clean programs (should compile and run):**
 ```bash
-# Test clean program (should produce no errors)
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/1.cm
-
-# Test semantic errors (should report 3 specific errors)
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/2.cm
-
-# Test with both AST and symbol table output
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s test/gcd.cm
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/1.cm
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/fac.cm
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/sort.cm
 ```
+
+**Error programs (should be rejected):**
+```bash
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/4.cm
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/5.cm
+```
+
 ---
 
-## Example Output
+## Error Reporting
 
-### Successful Compilation with Symbol Table
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/gcd.cm
-```
+All errors are reported to stderr with line numbers and descriptive messages. The compiler attempts error recovery to report multiple issues in a single run.
 
-**Output:**
-```
-Symbol table saved to test/gcd.sym
-```
-
-**test/gcd.sym contents:**
-```
-Entering scope: global
-  Entering scope: function gcd
-    u: int
-    v: int
-  Leaving scope: function gcd
-  Entering scope: function main
-    x: int
-    y: int
-  Leaving scope: function main
-  gcd: (int, int) -> int
-  main: (void) -> void
-Leaving scope: global
-```
-
-### Error Detection
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s test/3.cm
-```
-
-**Output:**
-```
-Error at line 15: Left operand of arithmetic operator must be integer
-Error at line 16: Type mismatch in assignment
-Error at line 17: Array index must be an integer
-
-Semantic analysis completed with errors.
-Symbol table saved to test/3.sym
-```
+- If syntax errors are detected, semantic analysis and code generation are skipped
+- If semantic errors are detected, code generation is skipped
+- Runtime errors (array bounds violations) output -1000000 (below) or -2000000 (above) and halt
 
 ---
 
 ## Project Documentation
 
-For more details, see the project documentation for each checkpoint. These can be found in the `docs/` directory:
-- `Checkpoint One Documentation.pdf` - Lexical and syntax analysis design and implementation
-- `Checkpoint Two Documentation.pdf` - Semantic analysis and type checking design and implementation
-
----
+For more details, see the `docs/` directory:
+- `Checkpoint One Documentation.pdf` - Lexical and syntax analysis
+- `Checkpoint Two Documentation.pdf` - Semantic analysis and type checking

@@ -1,75 +1,10 @@
-/*
- * Test 5: Comprehensive Stress Test
- * 
- * This test contains multiple semantic errors of various types to thoroughly test the compiler's error detection and recovery.
- * Expected errors:
- * - Undefined variables and functions
- * - Redefined symbols
- * - Type mismatches in operations
- * - Type mismatches in assignments
- * - Incorrect function arguments
- * - Return type mismatches
- * - Void variables
- * - Array indexing errors
- * - Void expressions in conditions
- */
-
-void badVar;
-int x;
-int x;
-
-int wrongReturn(void) {
-    return;
-}
-
-void cantReturnValue(void) {
-    return 42;
-}
-
-int needsReturn(int n) {
-    int result;
-    result = n;
-}
-
-void typeErrors(int a) {
-    int b;
-    bool c;
-    int arr[5];
-    
-    b = a + c;
-    c = a;
-    b = c;
-    arr[c] = 10;
-    b = notDefined;
-    c = x[5];
-    
-    if (wrongReturn()) {
-        b = 1;
-    }
-    
-    while (cantReturnValue()) {
-        b = b - 1;
-    }
-}
-
-void argErrors(void) {
-    int z;
-    bool flag;
-    
-    z = wrongReturn(10);
-    typeErrors();
-    typeErrors(flag, z);
-    z = missingFunc(5);
-}
-
+/* Test 5: Semantic errors
+   Error 1: variable z used before declaration
+   Error 2: variable x declared twice in same scope
+   Error 3: function foo called but never defined */
 void main(void) {
-    int a;
-    int duplicate;
-    int duplicate;
-    
-    a = undefined + 5;
-    duplicate = 10;
-    
-    argErrors();
-    output(a);
+    int x;
+    int x;
+    x = z + 1;
+    output(foo(x));
 }

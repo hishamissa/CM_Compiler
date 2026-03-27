@@ -1,0 +1,13 @@
+/* Test 0: Stress test - numerous errors of all types
+   Syntax: missing braces, bad tokens
+   Semantic: wrong types, undefined vars, bad calls
+   No limit on error count */
+void main(void {
+    int a; int b; int a;
+    bool c;
+    c = a + b;
+    a = c * 2;
+    output(undeclared);
+    output(main());
+    int late;
+}

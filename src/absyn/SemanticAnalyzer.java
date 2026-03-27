@@ -83,6 +83,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
         // Check for redefinition at current scope level
         for (NodeType node : list) {
             if (node.level == level) {
+                // Allow real definition to replace a prototype placeholder
+                if (node.def instanceof FunctionDec && dec instanceof FunctionDec) {
+                    FunctionDec existing = (FunctionDec) node.def;
+                    FunctionDec incoming = (FunctionDec) dec;
+                    if (existing.body == null && incoming.body != null) {
+                        // Replace placeholder with real definition
+                        list.remove(node);
+                        list.add(0, new NodeType(name, dec, level));
+                        return;
+                    }
+                }
                 hasSemanticErrors = true;
                 System.err.println("Error at line " + (dec.pos + 1) + 
                     ": Symbol '" + name + "' is already defined in this scope");
@@ -393,8 +404,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     
     public void visit(FunctionProtoDec dec, int level) {
-        // Insert function prototype into symbol table
-        insert(dec.name, dec);
+        // Insert a FunctionDec placeholder so forward calls type-check correctly
+        FunctionDec placeholder = new FunctionDec(dec.pos, dec.typ, dec.name, dec.params, null);
+        insert(dec.name, placeholder);
     }
     
     public void visit(SimpleVar var, int level) {

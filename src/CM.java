@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import absyn.Absyn;
 import absyn.ShowTreeVisitor;
 import absyn.SemanticAnalyzer;
+import absyn.CodeGenerator;
 
 /**
  * Main driver for the C- compiler.
@@ -13,10 +14,11 @@ import absyn.SemanticAnalyzer;
 public class CM {
     public static boolean SHOW_TREE = false;
     public static boolean SHOW_TABLE = false;
+    public static boolean GENERATE_CODE = false;
     
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.err.println("Usage: java CM [-a] [-s] <filename>");
+            System.err.println("Usage: java CM [-a] [-s] [-c] <filename>");
             System.exit(1);
         }
         
@@ -28,6 +30,8 @@ public class CM {
                 SHOW_TREE = true;
             } else if (args[i].equals("-s")) {
                 SHOW_TABLE = true;
+            } else if (args[i].equals("-c")) {
+                GENERATE_CODE = true;
             } else {
                 filename = args[i];
             }
@@ -81,6 +85,36 @@ public class CM {
                     System.err.println("\nSemantic analysis completed with errors.");
                 }
                 System.out.println("Symbol table saved to " + symFilename);
+            }
+
+            // Generate assembly code if -c flag specified
+            if (GENERATE_CODE && result != null) {
+                // Run semantic analysis if not already done
+                boolean ranSemanticAnalysis = SHOW_TABLE;
+                boolean hasErrors = false;
+                
+                if (!ranSemanticAnalysis) {
+                    // Run semantic analysis silently (no output file)
+                    SemanticAnalyzer analyzer = new SemanticAnalyzer(new PrintWriter(System.out));
+                    result.accept(analyzer, 0);
+                    hasErrors = SemanticAnalyzer.hasSemanticErrors;
+                } else {
+                    hasErrors = SemanticAnalyzer.hasSemanticErrors;
+                }
+                
+                // Only generate code if no semantic errors
+                if (!hasErrors) {
+                    String tmFilename = filename.substring(0, filename.lastIndexOf('.')) + ".tm";
+                    PrintWriter tmOut = new PrintWriter(new FileWriter(tmFilename));
+                    
+                    CodeGenerator codegen = new CodeGenerator(tmOut);
+                    codegen.generate(result);
+                    
+                    tmOut.close();
+                    System.out.println("Assembly code saved to " + tmFilename);
+                } else {
+                    System.err.println("\nCode generation skipped due to semantic errors.");
+                }
             }
             
         } catch (Exception e) {

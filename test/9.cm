@@ -1,0 +1,15 @@
+/* Test 9: Multiple mixed errors - syntax, semantic, runtime
+   No limit on error count */
+int x[5]
+void badFunc(int n) {
+    int n;
+    return n * undeclared;
+}
+
+void main(void) {
+    int x; int x;
+    bool y;
+    y = 5 + true;
+    x = badFunc();
+    output(x[99]);
+}

@@ -1,25 +1,22 @@
-/*
- * Test 2: Symbol Table Errors
- * 
- * This test has exactly 3 semantic errors related to symbol table issues:
- * Error 1 (Line 15): Variable 'x' is redeclared in the same scope
- * Error 2 (Line 17): Variable 'undeclared' is used without being declared
- * Error 3 (Line 23): Function 'unknownFunc' is called but not defined
- */
-
-int x;
-
-void foo(int a) {
-    int b;
-    int x;
-    int x;
-    
-    b = undeclared;
+/* Test 2: Recursive function and boolean variable
+   Input: a positive integer
+   Expected: outputs factorial of input */
+int factorial(int n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
 }
 
 void main(void) {
-    int y;
-    
-    y = unknownFunc(5);
-    output(y);
+    int x;
+    bool done;
+    x = input();
+    done = x > 0;
+    if (done) {
+        output(factorial(x));
+    } else {
+        output(0);
+    }
 }

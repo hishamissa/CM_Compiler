@@ -1,20 +1,23 @@
-/*
- * Test 3: Type Checking Errors
- * 
- * This test has exactly 3 semantic errors related to type mismatches:
- * Error 1 (Line 15): Cannot add bool and int (type mismatch in arithmetic)
- * Error 2 (Line 16): Cannot assign bool to int variable
- * Error 3 (Line 17): Array index must be int, not bool
- */
+/* Test 3: Global array, function with array parameter,
+   nested while loops. Input: 5 integers.
+   Expected: outputs them in reverse order */
+int a[5];
+
+void reverse(int arr[], int size) {
+    int i;
+    i = size - 1;
+    while (i >= 0) {
+        output(arr[i]);
+        i = i - 1;
+    }
+}
 
 void main(void) {
-    int x;
-    bool flag;
-    int nums[5];
-    
-    x = flag + 10;
-    x = flag;
-    x = nums[flag];
-    
-    output(x);
+    int i;
+    i = 0;
+    while (i < 5) {
+        a[i] = input();
+        i = i + 1;
+    }
+    reverse(a, 5);
 }

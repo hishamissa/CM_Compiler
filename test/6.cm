@@ -1,0 +1,16 @@
+/* Test 6: Semantic errors - type mismatches
+   Error 1: returning value from void function
+   Error 2: assigning void return to int variable
+   Error 3: using array where int expected in arithmetic */
+int a[5];
+
+void doNothing(void) {
+    return 42;
+}
+
+void main(void) {
+    int x;
+    x = doNothing();
+    x = a + 1;
+    output(x);
+}

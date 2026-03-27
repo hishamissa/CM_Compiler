@@ -1,53 +1,13 @@
-/*
- * Test 1: Clean Program w/ No Errors
- * 
- * This program should compile without any syntax or semantic errors.
- * Tests:
- * - Global variable declarations
- * - Function declarations with parameters
- * - Local variable declarations
- * - Array declarations and usage
- * - Function calls with correct arguments
- * - Return statements with correct types
- * - Control flow statements (if/while)
- * - Arithmetic and boolean operations
- */
-
-int x;
-int arr[10];
-bool flag;
-
-int max(int a, int b) {
-    if (a > b) {
-        return a;
-    } else {
-        return b;
-    }
-}
-
-void processArray(int data[], int size) {
-    int i;
-    i = 0;
-    while (i < size) {
-        data[i] = i * 2;
-        i = i + 1;
-    }
-}
-
+/* Test 1: Basic arithmetic, assignment, and while loop
+   Expected: outputs 10, 5, 50, 2 */
 void main(void) {
-    int result;
-    int y;
-    
-    x = 10;
-    y = 20;
-    result = max(x, y);
-    
-    flag = result > 15;
-    
-    if (flag) {
-        output(result);
-    }
-    
-    processArray(arr, 10);
-    output(arr[5]);
+    int a; int b; int c;
+    a = 10;
+    b = 5;
+    output(a);
+    output(b);
+    c = a * b;
+    output(c);
+    c = a / b;
+    output(c);
 }
