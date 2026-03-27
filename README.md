@@ -140,3 +140,4 @@ All errors are reported to stderr with line numbers and descriptive messages. Th
 For more details, see the `docs/` directory:
 - `Checkpoint One Documentation.pdf` - Lexical and syntax analysis
 - `Checkpoint Two Documentation.pdf` - Semantic analysis and type checking
+- `Checkpoint Two Documentation.pdf` - 
