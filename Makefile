@@ -14,5 +14,6 @@ all:
 clean:
 	rm -rf bin
 	rm -f Lexer.java sym.java parser.java
+	rm -f test/*.tm test/*.sym test/*.abs
 
 .PHONY: all clean

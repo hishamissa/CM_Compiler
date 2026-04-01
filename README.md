@@ -67,7 +67,6 @@ Reports errors to stderr if any are found.
 
 Generated `.tm` files can be executed using the TM simulator:
 ```bash
-cd TMSimulator
 ./tm <filename.tm>
 ```
 
@@ -107,21 +106,6 @@ The `test/` directory contains 15 C- programs:
 | `sort.cm` | Selection sort (input: 10 integers) |
 | `booltest.cm` | Factorial using boolean variable |
 | `mutual.cm` | Mutual recursion with function prototype |
-
-### Running the Tests
-
-**Clean programs (should compile and run):**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/1.cm
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/fac.cm
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/sort.cm
-```
-
-**Error programs (should be rejected):**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/4.cm
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c test/5.cm
-```
 
 ---
 
