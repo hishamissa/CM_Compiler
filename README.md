@@ -1,127 +1,67 @@
-# C- Compiler - CIS*4650
+# C- Compiler
 
-**Hisham Issa** | 1194466 | hissa01@uoguelph.ca | March 2026
+A compiler for the C- language, written in Java. It takes C- source code and works through the whole pipeline — scanning it into tokens, parsing it into a syntax tree, checking it for semantic and type errors, and finally generating TM assembly that runs on the TM simulator.
 
-## Overview
+I built this over a semester for CIS*4650 (Compilers) at the University of Guelph, across three checkpoints that each added another stage of the pipeline. It was one of the more challenging things I've built, and easily the one that taught me the most about how the languages I use every day actually work underneath.
 
-This is a complete compiler for the C- language, developed across three checkpoints for CIS*4650 (Compilers). The compiler performs lexical analysis, syntax analysis, semantic analysis, type checking, and TM assembly code generation.
+## How it's built
 
-Built using:
-- **JFlex** for lexical analysis (scanning)
-- **CUP** for syntax analysis (parsing)
-- **Custom visitor pattern** for semantic analysis and code generation
+The front end uses two standard tools: **JFlex** generates the lexer (the part that turns raw text into tokens), and **CUP** generates the parser (the part that turns tokens into a syntax tree). From there, semantic analysis and code generation are my own, built with a **visitor pattern** that walks the tree — one pass to check the program makes sense, another to emit code.
 
----
+The stages run in order and fail safely: if parsing finds syntax errors, it skips semantic analysis; if semantic analysis finds errors, it skips code generation. Errors are reported to stderr with line numbers, and the compiler tries to recover and keep going so it can report several problems in one run instead of stopping at the first.
 
-## Building the Compiler
+Requirements: Java 8+, plus JFlex and CUP (both included in `lib/`).
 
-**Requirements:** Java 8 or higher, JFlex, CUP (included in `lib/`)
+## Building it
 
-**Build commands:**
 ```bash
-make clean    # Removes all generated files
-make          # Builds the complete compiler
+make clean    # remove generated files
+make          # build the whole compiler
 ```
 
-This generates the scanner (`Lexer.java`), parser (`parser.java` and `sym.java`), and compiles everything to the `bin/` directory.
+This generates the lexer and parser and compiles everything into `bin/`.
 
----
+## Running it
 
-## Running the Compiler
+The compiler is driven by flags depending on how far through the pipeline you want to go:
 
-### Command-Line Options
-
-**Parse and display Abstract Syntax Tree (`-a`):**
 ```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a <filename.cm>
-```
-Creates `<filename>.abs` containing the abstract syntax tree.
+# Parse and write out the abstract syntax tree (.abs)
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a <file.cm>
 
-**Perform semantic analysis and display symbol table (`-s`):**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s <filename.cm>
-```
-Creates `<filename>.sym` containing the symbol table with scope information.
+# Semantic analysis + symbol table with scope info (.sym)
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -s <file.cm>
 
-**Generate TM assembly code (`-c`):**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c <filename.cm>
-```
-Creates `<filename>.tm` containing TM assembly code. Only generates code if the program has no parse or semantic errors.
-
-**Combined flags:**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM -a -s -c <filename.cm>
-```
-Creates `.abs`, `.sym`, and `.tm` output files.
-
-**Parse only (no output files):**
-```bash
-java -cp ./lib/java-cup-11b-runtime.jar:bin CM <filename.cm>
-```
-Reports errors to stderr if any are found.
-
----
-
-## Running Generated TM Code
-
-Generated `.tm` files can be executed using the TM simulator:
-```bash
-./tm <filename.tm>
+# Generate TM assembly (.tm) — only if there are no parse or semantic errors
+java -cp ./lib/java-cup-11b-runtime.jar:bin CM -c <file.cm>
 ```
 
-Inside the simulator:
-- `g` — run the program
-- `t` — toggle instruction trace
-- `s N` — step N instructions
-- `r` — show register contents
-- `d b n` — show n memory locations starting at b
-- `q` — quit
+You can combine flags (`-a -s -c`) to produce all three output files at once. Running with no flags just parses and reports any errors.
 
----
+## Running the generated code
 
-## Test Files
+The `.tm` files run on the TM simulator:
 
-The `test/` directory contains 15 C- programs:
+```bash
+./tm <file.tm>
+```
 
-### Required 10 Test Files
-| File | Description | Expected Result |
-|------|-------------|-----------------|
-| `1.cm` | Basic arithmetic and while loop | Compiles and runs, outputs 10 5 50 2 |
-| `2.cm` | Recursion and boolean variable | Compiles and runs, outputs factorial of input |
-| `3.cm` | Global array and array parameter | Compiles and runs, outputs input in reverse |
-| `4.cm` | Syntax errors | Rejected with parse errors |
-| `5.cm` | Semantic errors: undefined/redefined symbols | Rejected with semantic errors |
-| `6.cm` | Semantic errors: type mismatches | Rejected with semantic errors |
-| `7.cm` | Runtime bounds error (above) | Compiles, outputs -2000000 at runtime |
-| `8.cm` | Runtime bounds error (below) | Compiles, outputs -1000000 at runtime |
-| `9.cm` | Multiple mixed errors | Rejected with parse errors |
-| `0.cm` | Stress test with many errors | Rejected with parse errors |
+Once it's open, `g` runs the program, `t` toggles the instruction trace, `s N` steps N instructions, `r` shows the registers, `d b n` dumps n memory locations from address b, and `q` quits.
 
-### Provided Test Programs
-| File | Description |
-|------|-------------|
-| `fac.cm` | Factorial (input: integer, output: factorial) |
-| `gcd.cm` | Greatest common divisor (input: two integers) |
-| `sort.cm` | Selection sort (input: 10 integers) |
-| `booltest.cm` | Factorial using boolean variable |
-| `mutual.cm` | Mutual recursion with function prototype |
+## Tests
 
----
+The `test/` directory has 15 C- programs covering the cases that actually matter for a compiler — not just the happy path. A few examples:
 
-## Error Reporting
+- Basic arithmetic and loops, recursion, and arrays (including passing arrays as parameters and printing input in reverse)
+- Programs that *should* be rejected: syntax errors, undefined and redefined symbols, and type mismatches
+- Runtime array-bounds violations, which the generated code catches and halts on
 
-All errors are reported to stderr with line numbers and descriptive messages. The compiler attempts error recovery to report multiple issues in a single run.
+There are also the standard sample programs — factorial, GCD, selection sort, mutual recursion — as a sanity check that real, correct programs compile and run the way they should.
 
-- If syntax errors are detected, semantic analysis and code generation are skipped
-- If semantic errors are detected, code generation is skipped
-- Runtime errors (array bounds violations) output -1000000 (below) or -2000000 (above) and halt
+## A note on the design
 
----
+The part I found most interesting was the visitor pattern for the back half. Once the tree exists, semantic analysis and code generation are really just two different ways of walking the same structure, and building it that way kept each stage separate and a lot easier to reason about than trying to do everything in one pass. If you're reading this to get a sense of how I write code, the semantic analysis and code-gen stages are the parts worth looking at.
 
-## Project Documentation
+## Docs
 
-For more details, see the `docs/` directory:
-- `Checkpoint One Documentation.pdf` - Lexical and syntax analysis
-- `Checkpoint Two Documentation.pdf` - Semantic analysis and type checking
-- `Checkpoint Two Documentation.pdf` - 
+Fuller write-ups for each checkpoint are in `docs/` — lexical and syntax analysis, semantic analysis and type checking, and code generation.
