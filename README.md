@@ -1,6 +1,6 @@
 # C- Compiler
 
-A compiler for the C- language, written in Java. It takes C- source code and works through the whole pipeline — scanning it into tokens, parsing it into a syntax tree, checking it for semantic and type errors, and finally generating TM assembly that runs on the TM simulator.
+A compiler for the C- language, written in Java. It takes C- source code and works through the whole pipeline, scanning it into tokens, parsing it into a syntax tree, checking it for semantic and type errors, and finally generating TM assembly that runs on the TM simulator.
 
 I built this over a semester for CIS*4650 (Compilers) at the University of Guelph, across three checkpoints that each added another stage of the pipeline. It was one of the more challenging things I've built, and easily the one that taught me the most about how the languages I use every day actually work underneath.
 
